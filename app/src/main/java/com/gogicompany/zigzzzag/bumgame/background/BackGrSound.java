@@ -19,9 +19,8 @@ public class BackGrSound extends AsyncTask<Context, Void, Void> {
     protected Void doInBackground(Context... params) {
         MediaPlayer mp = MediaPlayer.create(params[0], R.raw.background);
         mp.setLooping(true);
-        mp.setVolume(1.0f, 1.0f);
+        mp.setVolume(0.5f, 0.5f);
         mp.start();
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
         return null;
     }

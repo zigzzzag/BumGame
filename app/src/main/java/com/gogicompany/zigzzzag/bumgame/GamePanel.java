@@ -3,6 +3,8 @@ package com.gogicompany.zigzzzag.bumgame;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -14,6 +16,7 @@ import com.gogicompany.zigzzzag.bumgame.gameobj.GameObjFactory;
 import com.gogicompany.zigzzzag.bumgame.gameobj.Score;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -27,6 +30,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private float scale;
     private final List<GameObj> flyObjects = new ArrayList<>();
     private final Score score = new Score();
+
+    SoundPool soundPool;
+    HashMap<Integer, Integer> soundPoolMap;
 
     public GamePanel(Context ctx) {
         super(ctx);
@@ -45,6 +51,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             GameObj go = GameObjFactory.INSTANCE.randomObj();
             this.flyObjects.add(go);
         }
+
+        soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
+        soundPool.load(ctx, R.raw.past, 1);
+        soundPool.load(ctx, R.raw.explosion1, 2);
     }
 
     @Override
@@ -83,13 +93,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public boolean onTouchEvent(MotionEvent e) {
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                    for (GameObj go : flyObjects) {
-                        if (go.onTouch(this, e, scale)) {
-                            score.addScore(go.getScore());
-                        } else {
-                            System.out.println("past");
-                        }
+                for (GameObj go : flyObjects) {
+                    if (go.onTouch(this, e, scale)) {
+                        score.addScore(go.getScore());
+                        soundPool.play(2, 1.0f, 1.0f, 1, 0, 1f);
+                    } else {
+                        soundPool.play(1, 1.0f, 1.0f, 1, 0, 1f);
                     }
+                }
                 break;
             }
             default:
