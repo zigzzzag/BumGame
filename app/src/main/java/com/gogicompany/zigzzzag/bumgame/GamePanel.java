@@ -126,15 +126,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 dueObjects.add(go);
                 effect.addPoints((int) (e.getX() / scale), (int) (e.getY() / scale), 50);
                 soundPool.play(2, 1.0f, 1.0f, 1, 0, 1f);
+                go.reset();
             } else {
                 soundPool.play(1, 1.0f, 1.0f, 1, 0, 1f);
             }
         }
-
-        for (int i = 0; i < dueObjects.size(); i++) {
-            flyObjects.add(GameObjFactory.INSTANCE.randomObj((int) getMaxX(), (int) getMaxY()));
-        }
-        flyObjects.removeAll(dueObjects);
     }
 
     public void update() {

@@ -7,7 +7,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.gogicompany.zigzzzag.bumgame.listener.OnScaleTouchListener;
-import com.gogicompany.zigzzzag.bumgame.particle.ParticleEffect;
 
 import java.util.Random;
 
@@ -79,5 +78,13 @@ public abstract class GameObj implements OnScaleTouchListener {
     }
 
     public void draw(Canvas c) {
+    }
+
+    public void reset() {
+        Random r = new Random();
+        x = r.nextInt(maxX);
+        y = maxY;
+
+        p.setColor(Color.argb(150, r.nextInt(256), r.nextInt(256), r.nextInt(256)));
     }
 }
