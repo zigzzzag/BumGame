@@ -3,9 +3,8 @@ package com.gogicompany.zigzzzag.bumgame;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.media.AudioManager;
 import android.media.SoundPool;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -35,7 +34,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     SoundPool soundPool;
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public GamePanel(Context ctx) {
         super(ctx);
 
@@ -48,8 +46,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         this.bgs = new BackGrSound(ctx);
         bgs.execute(ctx);
 
-//        soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
-        soundPool = new SoundPool.Builder().build();
+        soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
         soundPool.load(ctx, R.raw.past, 1);
         soundPool.load(ctx, R.raw.explosion1, 2);
     }
