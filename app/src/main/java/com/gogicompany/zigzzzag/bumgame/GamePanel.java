@@ -3,8 +3,9 @@ package com.gogicompany.zigzzzag.bumgame;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -14,9 +15,9 @@ import com.gogicompany.zigzzzag.bumgame.background.BackGrSound;
 import com.gogicompany.zigzzzag.bumgame.gameobj.GameObj;
 import com.gogicompany.zigzzzag.bumgame.gameobj.GameObjFactory;
 import com.gogicompany.zigzzzag.bumgame.gameobj.Score;
+import com.gogicompany.zigzzzag.bumgame.particle.ParticleEffect;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -28,18 +29,18 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private BackGrImage bgi;
     private final BackGrSound bgs;
     private float scale;
-    private final List<GameObj> flyObjects = new ArrayList<>();
-    private final Score score = new Score();
+    private List<GameObj> flyObjects = new ArrayList<>();
+    private final ParticleEffect effect = new ParticleEffect();
+    private Score score;
 
     SoundPool soundPool;
-    HashMap<Integer, Integer> soundPoolMap;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public GamePanel(Context ctx) {
         super(ctx);
 
         //add the callback to the surfaceholder to intercept events
         getHolder().addCallback(this);
-        score.flow(Score.Side.DOWN, Score.Side.RIGHT);
 
         this.thread = new MainThread(getHolder(), this);
         setFocusable(true);
@@ -47,12 +48,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         this.bgs = new BackGrSound(ctx);
         bgs.execute(ctx);
 
-        for (int i = 0; i < 1; i++) {
-            GameObj go = GameObjFactory.INSTANCE.randomObj();
-            this.flyObjects.add(go);
-        }
-
-        soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
+//        soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
+        soundPool = new SoundPool.Builder().build();
         soundPool.load(ctx, R.raw.past, 1);
         soundPool.load(ctx, R.raw.explosion1, 2);
     }
@@ -77,12 +74,32 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+    private float getMaxX() {
+        return getWidth() / scale;
+    }
+
+    private float getMaxY() {
+        return getHeight() / scale;
+    }
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         bgi = new BackGrImage(BitmapFactory.decodeResource(getResources(), R.drawable.bg2));
         bgi.setVector(-5);
 
         scale = getHeight() / (float) bgi.getHeight();
+
+        float maxX = getMaxX();
+        float maxY = getMaxY();
+
+        score = new Score(maxX, maxY);
+        System.out.println("getWidth() * scale, getHeight() * scale" + getWidth() * scale + " ," + getHeight() * scale);
+        score.position(Score.Side.DOWN, Score.Side.RIGHT);
+
+        for (int i = 0; i < 5; i++) {
+            GameObj go = GameObjFactory.INSTANCE.randomObj((int) maxX, (int) maxY);
+            this.flyObjects.add(go);
+        }
 
         //we can safely start the game loop
         thread.setRunning(true);
@@ -93,14 +110,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public boolean onTouchEvent(MotionEvent e) {
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                for (GameObj go : flyObjects) {
-                    if (go.onTouch(this, e, scale)) {
-                        score.addScore(go.getScore());
-                        soundPool.play(2, 1.0f, 1.0f, 1, 0, 1f);
-                    } else {
-                        soundPool.play(1, 1.0f, 1.0f, 1, 0, 1f);
-                    }
-                }
+                touch(e);
                 break;
             }
             default:
@@ -110,11 +120,32 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         return true;
     }
 
+    private void touch(MotionEvent e) {
+        List<GameObj> dueObjects = new ArrayList<>();
+
+        for (GameObj go : flyObjects) {
+            if (go.onTouch(this, e, scale)) {
+                score.addScore(10);
+                dueObjects.add(go);
+                effect.addPoints((int) (e.getX() / scale), (int) (e.getY() / scale), 50);
+                soundPool.play(2, 1.0f, 1.0f, 1, 0, 1f);
+            } else {
+                soundPool.play(1, 1.0f, 1.0f, 1, 0, 1f);
+            }
+        }
+
+        for (int i = 0; i < dueObjects.size(); i++) {
+            flyObjects.add(GameObjFactory.INSTANCE.randomObj((int) getMaxX(), (int) getMaxY()));
+        }
+        flyObjects.removeAll(dueObjects);
+    }
+
     public void update() {
         bgi.update();
         for (GameObj go : flyObjects) {
             go.update();
         }
+        effect.update();
     }
 
     @Override
@@ -127,6 +158,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 for (GameObj go : flyObjects) {
                     go.draw(c);
                 }
+                effect.draw(c);
                 score.draw(c);
             } finally {
                 c.restoreToCount(savedState);

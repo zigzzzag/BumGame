@@ -15,13 +15,17 @@ public class Score {
 
     private int score;
     private float x;
+    private float maxX;
     private float y;
+    private float maxY;
     private final Paint p;
-    private static final int DELTA_SPD = 10;
-    private static final int INDENT = 20;
-    private static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool();
+    private static final int INDENT = 50;
+    private static final ExecutorService THREAD_POOL = Executors.newSingleThreadExecutor();
 
-    public Score() {
+    public Score(float maxX, float maxY) {
+        this.maxX = maxX;
+        this.maxY = maxY;
+
         this.p = new Paint();
         p.setColor(Color.WHITE);
         p.setTextSize(50);
@@ -34,14 +38,14 @@ public class Score {
         UP
     }
 
-    public void flow(Side... flows) {
+    public void position(Side... flows) {
         for (Side s : flows) {
             switch (s) {
                 case RIGHT:
-                    x = 400;
+                    x = maxX - 2 * INDENT;
                     break;
                 case DOWN:
-                    y = 400;
+                    y = maxY - INDENT;
                     break;
                 case LEFT:
                     x = INDENT;

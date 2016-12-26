@@ -6,10 +6,8 @@ import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.gogicompany.zigzzzag.bumgame.drawable.Drawable;
 import com.gogicompany.zigzzzag.bumgame.listener.OnScaleTouchListener;
 import com.gogicompany.zigzzzag.bumgame.particle.ParticleEffect;
-import com.gogicompany.zigzzzag.bumgame.updatable.Updatable;
 
 import java.util.Random;
 
@@ -17,36 +15,44 @@ import java.util.Random;
  * Created by sbt-nikiforov-mo on 12/16/16.
  */
 
-public abstract class GameObj implements OnScaleTouchListener, Drawable, Updatable {
+public abstract class GameObj implements OnScaleTouchListener {
 
     protected int x;
     protected int y;
+    protected final int maxX;
+    protected final int maxY;
     protected int width;
     protected int height;
     protected int dx;
     protected int dy;
-    private int score = 10;
 
     protected Paint p = new Paint();
 
-    private final ParticleEffect effects = new ParticleEffect();
-
-    public GameObj(int x, int y, int width, int height, int dx, int dy) {
+    public GameObj(int x, int y, int width, int height, int dx, int dy, int maxX, int maxY) {
         this.x = x;
         this.y = y;
+        this.maxX = maxX;
+        this.maxY = maxY;
         this.width = width;
         this.height = height;
         this.dx = dx;
         this.dy = dy;
 
-        p.setColor(Color.GREEN);
+        Random rand = new Random();
+        int randColor = Color.argb(150, rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+        p.setColor(randColor);
     }
 
-    @Override
     public void update() {
-//        x += dx;
-//        y += dy;
-        effects.update();
+        x += dx;
+        y += dy;
+        updateBoundary();
+    }
+
+    protected void updateBoundary() {
+        if (y < 0) {
+            y = maxY;
+        }
     }
 
     @Override
@@ -61,43 +67,9 @@ public abstract class GameObj implements OnScaleTouchListener, Drawable, Updatab
             return false;
         }
 
-//        pe.addPoints(50, x, y);
-        effects.addPoints(x, y, 50);
-//        Random r1 = new Random();
-//        for (int i = 0; i < 100; i++) {
-//            int x1 = r1.nextInt(200) - 100;
-//            int y1 = r1.nextInt(200) - 100;
-//
-//            effects.addPoints(x + x1, y + y1, 50);
-//        }
-
         Random rand = new Random();
-        int r = rand.nextInt(255);
-        int g = rand.nextInt(255);
-        int b = rand.nextInt(255);
-        p.setColor(Color.rgb(r, g, b));
+        p.setColor(Color.argb(150, rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
 
-
-        String sDown = null;
-        String sMove = null;
-        String sUp = null;
-
-        switch (e.getAction()) {
-            case MotionEvent.ACTION_DOWN: // нажатие
-                sDown = "Down: " + xTouch + "," + yTouch;
-                sMove = "";
-                sUp = "";
-                break;
-            case MotionEvent.ACTION_MOVE: // движение
-                sMove = "Move: " + x + "," + y;
-                break;
-            case MotionEvent.ACTION_UP: // отпускание
-            case MotionEvent.ACTION_CANCEL:
-                sMove = "";
-                sUp = "Up: " + x + "," + y;
-                break;
-        }
-        System.out.println(sDown + "\n" + sMove + "\n" + sUp);
         return true;
     }
 
@@ -106,12 +78,6 @@ public abstract class GameObj implements OnScaleTouchListener, Drawable, Updatab
                 yTouch >= y && yTouch <= (y + height);
     }
 
-    @Override
     public void draw(Canvas c) {
-        effects.draw(c);
-    }
-
-    public int getScore() {
-        return score;
     }
 }
