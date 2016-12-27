@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 public class Score {
 
     private int score;
+    private int delta;
     private float x;
     private float maxX;
     private float y;
@@ -21,6 +22,24 @@ public class Score {
     private final Paint p;
     private static final int INDENT = 50;
     private static final ExecutorService THREAD_POOL = Executors.newSingleThreadExecutor();
+    private boolean updating = true;
+
+    {
+        THREAD_POOL.submit(() -> {
+            while (updating) {
+                if (delta > 0) {
+                    int d = delta / 10 + 1;
+                    delta -= d;
+                    score += d;
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
 
     public Score(float maxX, float maxY) {
         this.maxX = maxX;
@@ -42,7 +61,7 @@ public class Score {
         for (Side s : flows) {
             switch (s) {
                 case RIGHT:
-                    x = maxX - 2 * INDENT;
+                    x = maxX - INDENT;
                     break;
                 case DOWN:
                     y = maxY - INDENT;
@@ -60,24 +79,16 @@ public class Score {
     }
 
     public void draw(Canvas c) {
-        c.drawText(Integer.toString(score), x, y, p);
+        String txt = Integer.toString(score);
+        float txtW = p.measureText(txt);
+        c.drawText(txt, x - txtW, y, p);
     }
 
     public void addScore(final int delta) {
-        THREAD_POOL.submit(new Runnable() {
-            @Override
-            public void run() {
-                int d = delta;
-                while (d > 0) {
-                    d--;
-                    score++;
-                    try {
-                        Thread.sleep(150);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
+        this.delta += delta;
+    }
+
+    public void setUpdating(boolean updating) {
+        this.updating = updating;
     }
 }

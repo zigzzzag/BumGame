@@ -59,8 +59,8 @@ public abstract class GameObj implements OnScaleTouchListener {
         float xTouch = e.getX() / scale;
         float yTouch = e.getY() / scale;
 
-        System.out.println("x: " + this.x + "<" + xTouch + "<" + (this.x + width));
-        System.out.println("y: " + y + "<" + yTouch + "<" + (y + height));
+//        System.out.println("x: " + this.x + "<" + xTouch + "<" + (this.x + width));
+//        System.out.println("y: " + y + "<" + yTouch + "<" + (y + height));
 
         if (!isHit(xTouch, yTouch)) {
             return false;
