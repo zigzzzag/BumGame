@@ -31,13 +31,13 @@ public class ParticleEffect {
 
     public void update() {
         List<EPoint> duePoints = new ArrayList<>();
-        points.forEach(p -> {
+        for (EPoint p : points) {
             if (p.isAlive()) {
                 p.update();
             } else {
                 duePoints.add(p);
             }
-        });
+        }
 
         points.removeAll(duePoints);
     }
