@@ -118,18 +118,21 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void touch(MotionEvent e) {
-        List<GameObj> dueObjects = new ArrayList<>();
+        boolean hit = false;
 
         for (GameObj go : flyObjects) {
             if (go.onTouch(this, e, scale)) {
                 score.addScore(10);
-                dueObjects.add(go);
                 effect.addPoints((int) (e.getX() / scale), (int) (e.getY() / scale), 50);
-                soundPool.play(2, 1.0f, 1.0f, 1, 0, 1f);
                 go.reset();
-            } else {
-                soundPool.play(1, 1.0f, 1.0f, 1, 0, 1f);
+                hit = true;
             }
+        }
+
+        if (hit) {
+            soundPool.play(2, 1.0f, 1.0f, 1, 0, 1f);
+        } else {
+            soundPool.play(1, 0.7f, 0.7f, 1, 0, 1f);
         }
     }
 
