@@ -2,8 +2,6 @@ package com.gogicompany.zigzzzag.bumgame.particle;
 
 import android.graphics.Canvas;
 
-import com.gogicompany.zigzzzag.bumgame.drawable.Drawable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -12,7 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Created by sbt-nikiforov-mo on 12/20/16.
  */
 
-public class ParticleEffect implements Drawable {
+public class ParticleEffect {
 
     private final List<EPoint> points = new CopyOnWriteArrayList<>();
 
@@ -25,7 +23,6 @@ public class ParticleEffect implements Drawable {
         }
     }
 
-    @Override
     public void draw(Canvas c) {
         for (EPoint p : points) {
             p.draw(c);
@@ -34,13 +31,13 @@ public class ParticleEffect implements Drawable {
 
     public void update() {
         List<EPoint> duePoints = new ArrayList<>();
-        for (EPoint p : points) {
+        points.forEach(p -> {
             if (p.isAlive()) {
                 p.update();
             } else {
                 duePoints.add(p);
             }
-        }
+        });
 
         points.removeAll(duePoints);
     }

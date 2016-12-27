@@ -12,7 +12,7 @@ import com.gogicompany.zigzzzag.bumgame.R;
 
 public class BackGrSound extends AsyncTask<Context, Void, Void> {
 
-    public BackGrSound(Context ctx) {
+    public BackGrSound() {
     }
 
     @Override

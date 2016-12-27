@@ -43,10 +43,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         this.thread = new MainThread(getHolder(), this);
         setFocusable(true);
 
-        this.bgs = new BackGrSound(ctx);
+        this.bgs = new BackGrSound();
         bgs.execute(ctx);
 
-        soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
+        soundPool = new SoundPool.Builder().build();//new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
         soundPool.load(ctx, R.raw.past, 1);
         soundPool.load(ctx, R.raw.explosion1, 2);
     }
@@ -118,18 +118,18 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void touch(MotionEvent e) {
-        boolean hit = false;
+        final boolean[] hit = {false};
 
-        for (GameObj go : flyObjects) {
+        flyObjects.forEach((GameObj go) -> {
             if (go.onTouch(this, e, scale)) {
                 score.addScore(10);
                 effect.addPoints((int) (e.getX() / scale), (int) (e.getY() / scale), 50);
                 go.reset();
-                hit = true;
+                hit[0] = true;
             }
-        }
+        });
 
-        if (hit) {
+        if (hit[0]) {
             soundPool.play(2, 1.0f, 1.0f, 1, 0, 1f);
         } else {
             soundPool.play(1, 0.7f, 0.7f, 1, 0, 1f);
@@ -138,9 +138,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     public void update() {
         bgi.update();
-        for (GameObj go : flyObjects) {
-            go.update();
-        }
+        flyObjects.forEach(GameObj::update);
         effect.update();
     }
 
@@ -151,9 +149,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             c.scale(scale, scale);
             try {
                 bgi.draw(c);
-                for (GameObj go : flyObjects) {
-                    go.draw(c);
-                }
+                flyObjects.forEach((GameObj go) -> go.draw(c));
                 effect.draw(c);
                 score.draw(c);
             } finally {

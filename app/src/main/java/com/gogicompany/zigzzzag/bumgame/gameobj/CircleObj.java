@@ -41,7 +41,7 @@ public class CircleObj extends GameObj {
 
         r = rand.nextInt(50) + 50;
         x = rand.nextInt(maxX - 2 * r) + r;
-        y = maxY;
+        y = maxY + r;
 
         dx = 0;
         dy = -(rand.nextInt(10) + 5);

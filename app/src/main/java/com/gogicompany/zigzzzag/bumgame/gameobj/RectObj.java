@@ -44,6 +44,7 @@ public class RectObj extends GameObj {
         width = rand.nextInt(50) + 50;
         height = rand.nextInt(50) + 50;
         x = rand.nextInt(maxX - width);
+        y = maxY;
 
         dx = 0;
         dy = -(rand.nextInt(10) + 5);

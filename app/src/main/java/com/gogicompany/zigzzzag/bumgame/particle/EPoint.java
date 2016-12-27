@@ -4,15 +4,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.gogicompany.zigzzzag.bumgame.drawable.Drawable;
-
 import java.util.Random;
 
 /**
  * Created by sbt-nikiforov-mo on 12/20/16.
  */
 
-public class EPoint implements Drawable {
+public class EPoint {
 
     public float x;
     public float y;
@@ -54,7 +52,6 @@ public class EPoint implements Drawable {
         p.setColor(Color.rgb(r, g, b));
     }
 
-    @Override
     public void draw(Canvas canvas) {
         canvas.drawCircle(x, y, 3, p);
     }
