@@ -20,22 +20,14 @@ public abstract class GameObj implements OnScaleTouchListener {
     protected int y;
     protected final int maxX;
     protected final int maxY;
-    protected int width;
-    protected int height;
     protected int dx;
     protected int dy;
 
     protected Paint p = new Paint();
 
-    public GameObj(int x, int y, int width, int height, int dx, int dy, int maxX, int maxY) {
-        this.x = x;
-        this.y = y;
+    public GameObj(int maxX, int maxY) {
         this.maxX = maxX;
         this.maxY = maxY;
-        this.width = width;
-        this.height = height;
-        this.dx = dx;
-        this.dy = dy;
 
         Random rand = new Random();
         int randColor = Color.argb(150, rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
@@ -72,19 +64,14 @@ public abstract class GameObj implements OnScaleTouchListener {
         return true;
     }
 
-    protected boolean isHit(float xTouch, float yTouch) {
-        return xTouch >= x && xTouch <= (x + width) &&
-                yTouch >= y && yTouch <= (y + height);
+    protected abstract boolean isHit(float xTouch, float yTouch);
+
+    public abstract void randomProps();
+
+    public void reset() {
+        randomProps();
     }
 
     public void draw(Canvas c) {
-    }
-
-    public void reset() {
-        Random r = new Random();
-        x = r.nextInt(maxX);
-        y = maxY;
-
-        p.setColor(Color.argb(150, r.nextInt(256), r.nextInt(256), r.nextInt(256)));
     }
 }
